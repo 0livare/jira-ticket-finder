@@ -108,10 +108,12 @@ async function main(): Promise<void> {
     console.log(`Searching for Jira tickets in ${repos.length} repositories...`)
 
     let allTickets: string[] = []
+    // Track repository information including tags
+    const repoInfo: Record<string, { tickets: string[]; tag: string | null }> = {}
 
     for (const repo of repos) {
       const repoName = path.basename(repo)
-      console.log(`\nRepository: ${repoName}`)
+      console.log(`\nRepository: ${chalk.green(repoName)}`)
 
       const latestTag = await getLatestTag(repo, tagPattern)
       if (latestTag) {
@@ -135,15 +137,28 @@ async function main(): Promise<void> {
           console.log(`  ${chalk.cyan(ticket)}`)
         }
         allTickets = [...allTickets, ...tickets]
+
+        repoInfo[repoName] = { tickets: tickets, tag: latestTag }
       } else {
         console.log("No Jira tickets found")
       }
     }
 
-    console.log("\n=== Summary ===")
+    console.log(chalk.bgBlueBright("\n\n=== Summary ===\n\n"))
     if (allTickets.length > 0) {
       const uniqueTickets = [...new Set(allTickets)]
       console.log(`Found ${uniqueTickets.length} unique Jira tickets across all repositories:`)
+
+      console.log("\nRepositories and their latest tags:")
+      for (const [repoName, info] of Object.entries(repoInfo)) {
+        if (info.tickets.length > 0) {
+          console.log(
+            `${chalk.green(repoName)}: ${chalk.yellow(info.tag || "No tag")} ${chalk.gray(`(${info.tickets.length} tickets)`)}`,
+          )
+        }
+      }
+
+      console.log("\nJira tickets:")
       for (const ticket of uniqueTickets) {
         console.log(chalk.cyan(ticket))
       }
