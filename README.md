@@ -42,7 +42,7 @@ jira [options]
 
 - `-r`, `--repo`: Specific repositories to search (defaults to all git repos in current directory)
 - `-p`, `--prefix`: Jira project prefixes to look for (e.g., "PROJ", "TEST")
-- `-t`, `--tagPattern`: Pattern to match version tags (e.g., "v\*") (default to the latest tag)
+- `-t`, `--tagPattern`: Glob pattern to match version tags (e.g., `v*`) (default to the latest tag)
 - `-m`, `--maxTickets`: Maximum number of tickets to process per repository (default: 30)
 
 ## Examples:
@@ -67,8 +67,11 @@ jira --prefix PROJ --prefix TEST
 
 **Search with a specific tag pattern:**
 
+Specify a glob pattern to use for matching version tags. Default is to use the latest tag.
+
 ```bash
-jira --tagPattern "v[0-9]*"
+jira --tagPattern "v*"
+jira -t "v[0-9]*"
 ```
 
 **Set a different threshold for maximum tickets per repository:**
