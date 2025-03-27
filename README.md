@@ -40,7 +40,7 @@ jira [options]
 
 ## Options:
 
-- `-r`, `--repo`: Specific repositories to search (defaults to all git repos in current directory)
+- `-r`, `--repo`: Specific repositories to search (defaults to all git repos in current directory). Can be repo names or paths or globs.
 - `-p`, `--prefix`: Jira project prefixes to look for (e.g., "PROJ", "TEST")
 - `-t`, `--tagPattern`: Glob pattern to match version tags (e.g., `v*`) (default to the latest tag)
 - `-m`, `--maxTickets`: Maximum number of tickets to process per repository (default: 30)
@@ -55,8 +55,11 @@ jira
 
 **Search specific repositories:**
 
+Names of repos in the current directory, or paths to repos, can be provided. Glob patterns can be used to match multiple repositories.
+
 ```bash
 jira --repo repo1 --repo repo2
+jira -r "files*"
 ```
 
 **Search for specific Jira project tickets:**

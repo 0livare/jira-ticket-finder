@@ -5,8 +5,10 @@ import { promisify } from "util"
 import fs from "node:fs"
 import path from "node:path"
 import chalk from "chalk"
+import { glob } from "glob"
 
 import { parseCommandLineArgs } from "./cli"
+import { extractJiraTickets } from "./extract-jira-tickets"
 
 const execAsync = promisify(exec)
 
@@ -42,42 +44,6 @@ async function getLatestTag(repoPath: string, tagPattern?: string): Promise<stri
   }
 }
 
-// Function to extract Jira ticket numbers from commit messages
-async function extractJiraTickets(
-  repoPath: string,
-  latestTag: string | null,
-  prefixes?: string[],
-): Promise<string[]> {
-  let range = latestTag ? `${latestTag}..HEAD` : "HEAD"
-  const { stdout } = await execAsync(`git log ${range} --pretty=format:"%s"`, { cwd: repoPath })
-
-  if (!stdout.trim()) {
-    return []
-  }
-
-  const commitMessages = stdout.split("\n")
-  let tickets: string[] = []
-
-  // Default Jira ticket regex if no prefixes specified
-  let jiraRegex: RegExp
-  if (prefixes && prefixes.length > 0) {
-    const prefixPattern = prefixes.join("|")
-    jiraRegex = new RegExp(`(${prefixPattern})-\\d+`, "gi")
-  } else {
-    jiraRegex = /([A-Z]+-\d+)/g
-  }
-
-  for (const message of commitMessages) {
-    const matches = message.match(jiraRegex)
-    if (matches) {
-      tickets = [...tickets, ...matches]
-    }
-  }
-
-  // Remove duplicates and convert to uppercase for consistency
-  return [...new Set(tickets.map((ticket) => ticket.toUpperCase()))]
-}
-
 async function main(): Promise<void> {
   try {
     const cwd = process.cwd()
@@ -89,7 +55,11 @@ async function main(): Promise<void> {
     // Determine which repositories to search
     let repos: string[] = []
     if (specifiedRepos.length > 0) {
-      repos = specifiedRepos.map((repo) => path.resolve(cwd, repo))
+      const globPromises = specifiedRepos
+        .map((repo) => path.resolve(cwd, repo))
+        .map((path) => glob(path))
+      const resolvedGlobs = await Promise.all(globPromises)
+      repos = resolvedGlobs.flat()
     } else {
       const allDirs = await getDirectories(cwd)
       for (const dir of allDirs) {
