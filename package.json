@@ -2,10 +2,21 @@
   "name": "jira-ticket-finder",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "jira": "bun src/main.ts",
+    "build": "bun i && bun build src/main.ts --compile --outfile=dist/jira --sourcemap=inline && bun link"
+  },
+  "bin": {
+    "jira": "./dist/jira"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "prettier": "^3.5.3"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1"
   }
 }
