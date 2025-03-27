@@ -26,6 +26,11 @@ export async function parseCommandLineArgs() {
         short: "m",
         default: "30",
       },
+      commit: {
+        type: "string",
+        short: "c",
+        default: "HEAD",
+      },
     },
     strict: true,
     allowPositionals: true,

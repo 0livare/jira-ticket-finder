@@ -1,74 +1,17 @@
 #!/usr/bin/env bun
 
-import { exec } from "child_process"
-import { promisify } from "util"
-import fs from "node:fs"
 import path from "node:path"
 import chalk from "chalk"
-import { glob } from "glob"
 
 import { parseCommandLineArgs } from "./cli"
 import { extractJiraTickets } from "./extract-jira-tickets"
-
-const execAsync = promisify(exec)
+import { getLatestTag, findRepoPaths } from "./helpers"
 
 const args = await parseCommandLineArgs()
 
-// Function to check if a directory is a git repository
-async function isGitRepo(dir: string): Promise<boolean> {
-  try {
-    await execAsync("git rev-parse --is-inside-work-tree", { cwd: dir })
-    return true
-  } catch (error) {
-    return false
-  }
-}
-
-// Function to get all directories in the current working directory
-async function getDirectories(sourceDir: string): Promise<string[]> {
-  const items = await fs.promises.readdir(sourceDir, { withFileTypes: true })
-  return items.filter((item) => item.isDirectory()).map((item) => path.join(sourceDir, item.name))
-}
-
-// Function to get the latest git tag in a repository
-async function getLatestTag(repoPath: string, tagPattern?: string): Promise<string | null> {
-  try {
-    let command = "git describe --tags --abbrev=0"
-    if (tagPattern) {
-      command += ` --match "${tagPattern}"`
-    }
-    const { stdout } = await execAsync(command, { cwd: repoPath })
-    return stdout.trim()
-  } catch (error) {
-    return null
-  }
-}
-
 async function main(): Promise<void> {
   try {
-    const cwd = process.cwd()
-    const specifiedRepos = args.repo
-    const prefixes = args.prefix
-    const tagPattern = args.tagPattern
-    const maxTickets = parseInt(args.maxTickets)
-
-    // Determine which repositories to search
-    let repos: string[] = []
-    if (specifiedRepos.length > 0) {
-      const globPromises = specifiedRepos
-        .map((repo) => path.resolve(cwd, repo))
-        .map((path) => glob(path))
-      const resolvedGlobs = await Promise.all(globPromises)
-      repos = resolvedGlobs.flat()
-    } else {
-      const allDirs = await getDirectories(cwd)
-      for (const dir of allDirs) {
-        if (await isGitRepo(dir)) {
-          repos.push(dir)
-        }
-      }
-    }
-
+    const repos = await findRepoPaths(args.repo)
     if (repos.length === 0) {
       console.info("No git repositories found")
       return
@@ -87,7 +30,7 @@ async function main(): Promise<void> {
       const repoName = path.basename(repo)
       console.info(`\n${chalk.green(repoName)}`)
 
-      const latestTag = await getLatestTag(repo, tagPattern)
+      const latestTag = await getLatestTag({ repoPath: repo, tagPattern: args.tagPattern })
       if (latestTag) {
         console.info(`  Latest tag: ${chalk.yellow(latestTag)}`)
       } else {
@@ -100,8 +43,13 @@ async function main(): Promise<void> {
         continue
       }
 
-      const tickets = await extractJiraTickets(repo, latestTag, prefixes)
+      const tickets = await extractJiraTickets({
+        repoPath: repo,
+        latestTag,
+        prefixes: args.prefix,
+      })
 
+      const maxTickets = parseInt(args.maxTickets)
       if (tickets.length > maxTickets) {
         console.info(
           chalk.redBright(

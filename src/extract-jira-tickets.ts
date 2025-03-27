@@ -4,11 +4,13 @@ import { promisify } from "util"
 const execAsync = promisify(exec)
 
 // Function to extract Jira ticket numbers from commit messages
-export async function extractJiraTickets(
-  repoPath: string,
-  latestTag: string | null,
-  prefixes?: string[],
-): Promise<string[]> {
+export async function extractJiraTickets(args: {
+  repoPath: string
+  latestTag: string | null
+  prefixes?: string[]
+}): Promise<string[]> {
+  const { repoPath, latestTag, prefixes } = args
+
   let range = latestTag ? `${latestTag}..HEAD` : "HEAD"
   const { stdout } = await execAsync(`git log ${range} --pretty=format:"%s"`, { cwd: repoPath })
 
