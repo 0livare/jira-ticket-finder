@@ -21,6 +21,11 @@ export async function parseCommandLineArgs() {
         short: "t",
         default: undefined,
       },
+      maxTickets: {
+        type: "string",
+        short: "m",
+        default: "30",
+      },
     },
     strict: true,
     allowPositionals: true,

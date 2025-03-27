@@ -4,6 +4,7 @@ import { exec } from "child_process"
 import { promisify } from "util"
 import fs from "node:fs"
 import path from "node:path"
+import chalk from "chalk"
 
 import { parseCommandLineArgs } from "./cli"
 
@@ -84,6 +85,7 @@ async function main(): Promise<void> {
     const specifiedRepos = args.repo
     const prefixes = args.prefix
     const tagPattern = args.tagPattern
+    const maxTickets = parseInt(args.maxTickets)
 
     // Determine which repositories to search
     let repos: string[] = []
@@ -113,17 +115,24 @@ async function main(): Promise<void> {
 
       const latestTag = await getLatestTag(repo, tagPattern)
       if (latestTag) {
-        console.log(`Latest tag: ${latestTag}`)
+        console.log(`Latest tag: ${chalk.yellow(latestTag)}`)
       } else {
         console.log("No tags found, searching all commits")
       }
 
       const tickets = await extractJiraTickets(repo, latestTag, prefixes)
 
-      if (tickets.length > 0) {
+      if (tickets.length > maxTickets) {
+        console.log(
+          chalk.redBright(
+            `Excluding repository with ${tickets.length} tickets (exceeds threshold of ${maxTickets})`,
+          ),
+        )
+      } else if (tickets.length > 0) {
         console.log(`Found ${tickets.length} Jira tickets:`)
+
         for (const ticket of tickets) {
-          console.log(`  ${ticket}`)
+          console.log(`  ${chalk.cyan(ticket)}`)
         }
         allTickets = [...allTickets, ...tickets]
       } else {
@@ -136,7 +145,7 @@ async function main(): Promise<void> {
       const uniqueTickets = [...new Set(allTickets)]
       console.log(`Found ${uniqueTickets.length} unique Jira tickets across all repositories:`)
       for (const ticket of uniqueTickets) {
-        console.log(ticket)
+        console.log(chalk.cyan(ticket))
       }
     } else {
       console.log("No Jira tickets found in any repository")

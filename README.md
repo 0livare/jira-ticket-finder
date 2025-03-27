@@ -43,6 +43,7 @@ jira [options]
 - `-r`, `--repo`: Specific repositories to search (defaults to all git repos in current directory)
 - `-p`, `--prefix`: Jira project prefixes to look for (e.g., "PROJ", "TEST")
 - `-t`, `--tagPattern`: Pattern to match version tags (e.g., "v\*") (default to the latest tag)
+- `-m`, `--maxTickets`: Maximum number of tickets to process per repository (default: 30)
 
 ## Examples:
 
@@ -70,4 +71,10 @@ jira --prefix PROJ --prefix TEST
 jira --tagPattern "v[0-9]*"
 ```
 
-The script will provide both detailed output per repository and a summary of all unique Jira tickets found across all repositories.
+**Set a different threshold for maximum tickets per repository:**
+
+```bash
+jira --maxTickets 50
+```
+
+The script will provide both detailed output per repository and a summary of all unique Jira tickets found across all repositories. Repositories with more tickets than the specified maximum will be excluded from the summary.
