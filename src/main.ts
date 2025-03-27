@@ -81,8 +81,8 @@ async function extractJiraTickets(
 async function main(): Promise<void> {
   try {
     const cwd = process.cwd()
-    const specifiedRepos = args.repos
-    const prefixes = args.prefixes
+    const specifiedRepos = args.repo
+    const prefixes = args.prefix
     const tagPattern = args.tagPattern
 
     // Determine which repositories to search

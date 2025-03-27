@@ -40,8 +40,8 @@ jira [options]
 
 ## Options:
 
-- `-r`, `--repos`: Specific repositories to search (defaults to all git repos in current directory)
-- `-p`, `--prefixes`: Jira project prefixes to look for (e.g., "PROJ", "TEST")
+- `-r`, `--repo`: Specific repositories to search (defaults to all git repos in current directory)
+- `-p`, `--prefix`: Jira project prefixes to look for (e.g., "PROJ", "TEST")
 - `-t`, `--tagPattern`: Pattern to match version tags (e.g., "v\*") (default to the latest tag)
 
 ## Examples:
@@ -55,19 +55,19 @@ jira
 **Search specific repositories:**
 
 ```bash
-jira --repos repo1 repo2
+jira --repo repo1 --repo repo2
 ```
 
 **Search for specific Jira project tickets:**
 
 ```bash
-jira --prefixes PROJ TEST
+jira --prefix PROJ --prefix TEST
 ```
 
 **Search with a specific tag pattern:**
 
 ```bash
-jira --tag-pattern "v[0-9]*"
+jira --tagPattern "v[0-9]*"
 ```
 
 The script will provide both detailed output per repository and a summary of all unique Jira tickets found across all repositories.

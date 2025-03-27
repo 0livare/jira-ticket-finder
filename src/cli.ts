@@ -4,13 +4,13 @@ export async function parseCommandLineArgs() {
   let { values } = parseArgs({
     args: Bun.argv,
     options: {
-      repos: {
+      repo: {
         type: "string",
         short: "r",
         multiple: true,
         default: [],
       },
-      prefixes: {
+      prefix: {
         type: "string",
         short: "p",
         multiple: true,
