@@ -70,11 +70,11 @@ async function main(): Promise<void> {
     }
 
     if (repos.length === 0) {
-      console.log("No git repositories found")
+      console.info("No git repositories found")
       return
     }
 
-    console.log(`Searching for Jira tickets in ${repos.length} repositories...`)
+    console.info(`Searching for Jira tickets in ${repos.length} repositories...`)
 
     let allTickets: string[] = []
     // Track repository information including tags
@@ -85,13 +85,13 @@ async function main(): Promise<void> {
 
     for (const repo of repos) {
       const repoName = path.basename(repo)
-      console.log(`\n${chalk.green(repoName)}`)
+      console.info(`\n${chalk.green(repoName)}`)
 
       const latestTag = await getLatestTag(repo, tagPattern)
       if (latestTag) {
-        console.log(`  Latest tag: ${chalk.yellow(latestTag)}`)
+        console.info(`  Latest tag: ${chalk.yellow(latestTag)}`)
       } else {
-        console.log(chalk.redBright("  No tags found, excluding repository"))
+        console.info(chalk.redBright("  No tags found, excluding repository"))
         repoInfo[repoName] = {
           tickets: [],
           tag: null,
@@ -103,7 +103,7 @@ async function main(): Promise<void> {
       const tickets = await extractJiraTickets(repo, latestTag, prefixes)
 
       if (tickets.length > maxTickets) {
-        console.log(
+        console.info(
           chalk.redBright(
             `  Excluding repository with ${tickets.length} tickets (exceeds threshold of ${maxTickets})`,
           ),
@@ -114,45 +114,45 @@ async function main(): Promise<void> {
           excludedReason: "Excluded due to exceeding threshold",
         }
       } else if (tickets.length > 0) {
-        console.log(`  Found ${tickets.length} Jira tickets:`)
+        console.info(`  Found ${tickets.length} Jira tickets:`)
 
         for (const ticket of tickets) {
-          console.log(`    ${chalk.cyan(ticket)}`)
+          console.info(`    ${chalk.cyan(ticket)}`)
         }
         allTickets = [...allTickets, ...tickets]
         repoInfo[repoName] = { tickets, tag: latestTag }
       } else {
-        console.log("  No Jira tickets found")
+        console.info("  No Jira tickets found")
       }
     }
 
-    console.log("\n\n")
-    console.log(chalk.bgBlueBright("=="))
-    console.log(chalk.bgBlueBright("=== Summary ==="))
-    console.log(chalk.bgBlueBright("=="))
-    console.log("\n")
+    console.info("\n\n")
+    console.info(chalk.bgBlueBright("=="))
+    console.info(chalk.bgBlueBright("=== Summary ==="))
+    console.info(chalk.bgBlueBright("=="))
+    console.info("\n")
 
     if (allTickets.length > 0) {
       const uniqueTickets = [...new Set(allTickets)]
-      console.log(`Found ${uniqueTickets.length} unique Jira tickets across all repositories:`)
+      console.info(`Found ${uniqueTickets.length} unique Jira tickets across all repositories:`)
 
-      console.log("\nRepositories and their latest tags:")
+      console.info("\nRepositories and their latest tags:")
       for (const [repoName, info] of Object.entries(repoInfo)) {
         if (info.excludedReason) {
-          console.log(`  ${chalk.green(repoName)}: ${chalk.redBright(info.excludedReason)}`)
+          console.info(`  ${chalk.green(repoName)}: ${chalk.redBright(info.excludedReason)}`)
         } else if (info.tickets.length > 0) {
-          console.log(
+          console.info(
             `  ${chalk.green(repoName)}: ${chalk.yellow(info.tag || "No tag")} ${chalk.gray(`(${info.tickets.length} tickets)`)}`,
           )
         }
       }
 
-      console.log("\nJira tickets:")
+      console.info("\nJira tickets:")
       for (const ticket of uniqueTickets) {
-        console.log(chalk.cyan(ticket))
+        console.info(chalk.cyan(ticket))
       }
     } else {
-      console.log("No Jira tickets found in any repository")
+      console.info("No Jira tickets found in any repository")
     }
   } catch (error) {
     console.error("Error:", error instanceof Error ? error.message : String(error))
