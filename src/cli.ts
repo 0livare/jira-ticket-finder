@@ -26,10 +26,14 @@ export async function parseCommandLineArgs() {
         short: "m",
         default: "30",
       },
-      commit: {
+      toCommit: {
         type: "string",
         short: "c",
-        default: "HEAD",
+      },
+      noFetchLatest: {
+        type: "boolean",
+        short: "f",
+        default: false,
       },
     },
     strict: true,

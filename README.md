@@ -44,6 +44,8 @@ jira [options]
 - `-p`, `--prefix`: Jira project prefixes to look for (e.g., "PROJ", "TEST")
 - `-t`, `--tagPattern`: Glob pattern to match version tags (e.g., `v*`) (default to the latest tag)
 - `-m`, `--maxTickets`: Maximum number of tickets to process per repository (default: 30)
+- `-c`, `--toCommit`: Commitish to stop searching at (default: main/master)
+- `-f`, `--noFetchLatest`: Skip fetching latest repo data before searching
 
 ## Examples:
 

@@ -5,7 +5,7 @@ import chalk from "chalk"
 
 import { parseCommandLineArgs } from "./cli"
 import { extractJiraTickets } from "./extract-jira-tickets"
-import { getLatestTag, findRepoPaths } from "./helpers"
+import { getLatestTag, findRepoPaths, getMainBranch, execAsync } from "./helpers"
 
 const args = await parseCommandLineArgs()
 
@@ -30,6 +30,8 @@ async function main(): Promise<void> {
       const repoName = path.basename(repo)
       console.info(`\n${chalk.green(repoName)}`)
 
+      if (!args.noFetchLatest) await execAsync("git fetch --all", { cwd: repo })
+
       const latestTag = await getLatestTag({ repoPath: repo, tagPattern: args.tagPattern })
       if (latestTag) {
         console.info(`  Latest tag: ${chalk.yellow(latestTag)}`)
@@ -43,11 +45,10 @@ async function main(): Promise<void> {
         continue
       }
 
-      const tickets = await extractJiraTickets({
-        repoPath: repo,
-        latestTag,
-        prefixes: args.prefix,
-      })
+      const toCommit = args.toCommit || (await getMainBranch(repo))
+      const gitRange = latestTag ? `${latestTag}..${toCommit}` : toCommit
+      console.info(chalk.gray.italic(`  Searching commits: ${gitRange}`))
+      const tickets = await extractJiraTickets({ repoPath: repo, gitRange, prefixes: args.prefix })
 
       const maxTickets = parseInt(args.maxTickets)
       if (tickets.length > maxTickets) {
@@ -75,14 +76,14 @@ async function main(): Promise<void> {
     }
 
     console.info("\n\n")
-    console.info(chalk.bgBlueBright("=="))
-    console.info(chalk.bgBlueBright("=== Summary ==="))
-    console.info(chalk.bgBlueBright("=="))
-    console.info("\n")
+    console.info(chalk.bgBlueBright("*************************"))
+    console.info(chalk.bgBlueBright("******** Summary ********"))
+    console.info(chalk.bgBlueBright("*************************"))
+    console.info("")
 
     if (allTickets.length > 0) {
       const uniqueTickets = [...new Set(allTickets)]
-      console.info(`Found ${uniqueTickets.length} unique Jira tickets across all repositories:`)
+      console.info(`Found ${uniqueTickets.length} unique Jira tickets across all repositories.`)
 
       console.info("\nRepositories and their latest tags:")
       for (const [repoName, info] of Object.entries(repoInfo)) {
@@ -102,6 +103,8 @@ async function main(): Promise<void> {
     } else {
       console.info("No Jira tickets found in any repository")
     }
+
+    console.info("\n\n")
   } catch (error) {
     console.error("Error:", error instanceof Error ? error.message : String(error))
     process.exit(1)

@@ -4,7 +4,7 @@ import fs from "node:fs"
 import path from "node:path"
 import { glob } from "glob"
 
-const execAsync = promisify(exec)
+export const execAsync = promisify(exec)
 
 /** Get the latest git tag in a repository */
 export async function getLatestTag(args: {
@@ -17,6 +17,7 @@ export async function getLatestTag(args: {
     if (tagPattern) {
       command += ` --match "${tagPattern}"`
     }
+
     const { stdout } = await execAsync(command, { cwd: repoPath })
     return stdout.trim()
   } catch (error) {
@@ -58,4 +59,12 @@ async function isGitRepo(dir: string): Promise<boolean> {
   } catch (error) {
     return false
   }
+}
+
+export async function getMainBranch(repoPath: string): Promise<string> {
+  const { stdout: firstRemote } = await execAsync("git remote show | head -n 1", { cwd: repoPath })
+  const { stdout: branches } = await execAsync("git branch", { cwd: repoPath })
+  if (branches.includes("main")) return `${firstRemote.trim()}/main`
+  if (branches.includes("master")) return `${firstRemote.trim()}/master`
+  return "HEAD"
 }
