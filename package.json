@@ -1,13 +1,31 @@
 {
   "name": "jira-ticket-finder",
+  "version": "0.0.1",
+  "description": "Find Jira tickets in git commits since the last release",
+  "author": "Zach Olivare <https://github.com/0livare>",
+  "license": "ISC",
   "module": "index.ts",
+  "main": "dist/jira",
   "type": "module",
-  "scripts": {
-    "jira": "bun src/main.ts",
-    "build": "bun i && bun build src/main.ts --compile --outfile=dist/jira --sourcemap=inline && bun link"
-  },
   "bin": {
     "jira": "./dist/jira"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "jira": "bun src/main.ts",
+    "build": "bun i && bun build src/main.ts --compile --outfile=dist/jira --sourcemap=inline && bun link",
+    "prepublishOnly": "bun run build"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "command-line-args": "^6.0.1",
+    "command-line-usage": "^7.0.3",
+    "glob": "^11.0.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -15,13 +33,17 @@
     "@types/command-line-usage": "^5.0.4",
     "prettier": "^3.5.3"
   },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0livare/jira-ticket-finder.git"
   },
-  "dependencies": {
-    "chalk": "^5.4.1",
-    "command-line-args": "^6.0.1",
-    "command-line-usage": "^7.0.3",
-    "glob": "^11.0.1"
-  }
+  "keywords": [
+    "jira",
+    "find",
+    "ticket",
+    "numbers",
+    "git",
+    "cli",
+    "release"
+  ]
 }
