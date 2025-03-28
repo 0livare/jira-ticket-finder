@@ -5,16 +5,11 @@ const execAsync = promisify(exec)
 
 // Function to extract Jira ticket numbers from commit messages
 export async function extractJiraTickets(args: {
-  repoPath: string
   prefixes?: string[]
-  gitRange: string
+  commitMessages: string[]
 }): Promise<string[]> {
-  const { repoPath, prefixes, gitRange } = args
+  const { prefixes, commitMessages } = args
 
-  const { stdout } = await execAsync(`git log ${gitRange} --pretty=format:"%s"`, { cwd: repoPath })
-  if (!stdout.trim()) return []
-
-  const commitMessages = stdout.split("\n")
   let tickets: string[] = []
 
   // Default Jira ticket regex if no prefixes specified

@@ -11,6 +11,7 @@ import {
   expandFileNamePathGlob,
   getMainBranch,
   execAsync,
+  getCommitMessagesInRange,
 } from "./helpers"
 
 const args = parseCommandLineArgs()
@@ -62,7 +63,9 @@ async function main(): Promise<void> {
       const toCommit = args.toCommit || (await getMainBranch(repo))
       const gitRange = latestTag ? `${latestTag}..${toCommit}` : toCommit
       console.info(chalk.gray.italic(`  Searching commits: ${gitRange}`))
-      const tickets = await extractJiraTickets({ repoPath: repo, gitRange, prefixes: args.prefix })
+
+      const commitMessages = await getCommitMessagesInRange({ repoPath: repo, gitRange })
+      const tickets = await extractJiraTickets({ commitMessages, prefixes: args.prefix })
 
       if (tickets.length > args.maxTickets) {
         console.info(

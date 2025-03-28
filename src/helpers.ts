@@ -3,23 +3,25 @@ import { promisify } from "util"
 import fs from "node:fs"
 import path from "node:path"
 import { glob } from "glob"
+import { minimatch } from "minimatch"
 
 export const execAsync = promisify(exec)
 
-/** Get the latest git tag in a repository */
+/** Get the latest git tag in a repository by creation time */
 export async function getLatestTag(args: {
   repoPath: string
   tagPattern?: string
 }): Promise<string | null> {
   const { repoPath, tagPattern } = args
   try {
-    let command = "git describe --tags --abbrev=0"
-    if (tagPattern) {
-      command += ` --match "${tagPattern}"`
-    }
-
+    const command = "git for-each-ref --sort=-creatordate --format '%(refname:short)' refs/tags/"
     const { stdout } = await execAsync(command, { cwd: repoPath })
-    return stdout.trim()
+    const tags = stdout.trim().split("\n")
+
+    if (!tagPattern) return tags[0]
+
+    const matchedTag = tags.find((tag) => minimatch(tag, tagPattern))
+    return matchedTag || null
   } catch (error) {
     return null
   }
@@ -81,4 +83,13 @@ export async function getMainBranch(repoPath: string): Promise<string> {
   if (branches.includes("main")) return `${firstRemote.trim()}/main`
   if (branches.includes("master")) return `${firstRemote.trim()}/master`
   return "HEAD"
+}
+
+export async function getCommitMessagesInRange(args: { repoPath: string; gitRange: string }) {
+  const { repoPath, gitRange } = args
+
+  const { stdout } = await execAsync(`git log ${gitRange} --pretty=format:"%s"`, { cwd: repoPath })
+  if (!stdout.trim()) return []
+
+  return stdout.split("\n")
 }
