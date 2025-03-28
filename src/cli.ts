@@ -1,6 +1,17 @@
 import commandLineArgs from "command-line-args"
 import commandLineUsage, { type OptionDefinition, type Section } from "command-line-usage"
 
+type Args = {
+  repo: string[]
+  excludeRepo: string[]
+  prefix: string[]
+  tagPattern: string | undefined
+  maxTickets: number
+  toCommit: string | undefined
+  fetchLatest: boolean
+  help?: boolean
+}
+
 export const optionDefinitions: OptionDefinition[] = [
   {
     name: "repo",
@@ -9,6 +20,14 @@ export const optionDefinitions: OptionDefinition[] = [
     multiple: true,
     defaultValue: [],
     description: "Specify repository paths or globs to search in",
+  },
+  {
+    name: "exclude-repo",
+    alias: "x",
+    type: String,
+    multiple: true,
+    defaultValue: [],
+    description: "Specify repository paths or globs to exclude",
   },
   {
     name: "prefix",
@@ -56,16 +75,6 @@ export const optionDefinitions: OptionDefinition[] = [
     description: "Display this usage guide",
   },
 ]
-
-type Args = {
-  repo: string[]
-  prefix: string[]
-  tagPattern: string | undefined
-  maxTickets: number
-  toCommit: string | undefined
-  fetchLatest: boolean
-  help?: boolean
-}
 
 export function parseCommandLineArgs(): Args {
   const options = commandLineArgs(optionDefinitions, { camelCase: true })

@@ -39,6 +39,7 @@ jira [options]
 ## Options:
 
 - `-r`, `--repo`: Specific repositories to search (defaults to all git repos in current directory). Can be repo names or paths or globs.
+- `-x`, `--exclude-repo`: Specific repositories to exclude. Can be repo names or paths or globs.
 - `-p`, `--prefix`: Jira project prefixes to look for (e.g., "PROJ", "TEST")
 - `-t`, `--tag-pattern`: Glob pattern to match version tags (e.g., `v*`) (default to the latest tag)
 - `-m`, `--max-tickets`: Maximum number of tickets to process per repository (default: 30)
@@ -59,13 +60,15 @@ jira
 Names of repos in the current directory, or paths to repos, can be provided. Glob patterns can be used to match multiple repositories.
 
 ```bash
-jira --repo repo1 --repo repo2
+jira --repo repo1 repo2
+jira --repo ~/dev/repo1 --repo ../repo2
 jira -r "files*"
 ```
 
 **Search for specific Jira ticket prefixes:**
 
 ```bash
+jira --prefix PROJ TEST
 jira --prefix PROJ --prefix TEST
 ```
 
@@ -74,14 +77,15 @@ jira --prefix PROJ --prefix TEST
 Specify a glob pattern to use for matching version tags. Default is to use the latest tag.
 
 ```bash
-jira --tagPattern "v*"
+jira --tag-pattern "v*"
+jira --tag-pattern "*.*.*"
 jira -t "v[0-9]*"
 ```
 
 **Set a different threshold for maximum tickets per repository:**
 
 ```bash
-jira --maxTickets 50
+jira --max-tickets 50
 ```
 
 The script will provide both detailed output per repository and a summary of all unique Jira tickets found across all repositories. Repositories with more tickets than the specified maximum will be excluded from the summary.

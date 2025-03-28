@@ -5,7 +5,13 @@ import chalk from "chalk"
 
 import { parseCommandLineArgs, showUsageGuide } from "./cli"
 import { extractJiraTickets } from "./extract-jira-tickets"
-import { getLatestTag, findRepoPaths, getMainBranch, execAsync } from "./helpers"
+import {
+  getLatestTag,
+  findRepoPaths,
+  expandFileNamePathGlob,
+  getMainBranch,
+  execAsync,
+} from "./helpers"
 
 const args = parseCommandLineArgs()
 
@@ -16,7 +22,10 @@ if (args.help) {
 
 async function main(): Promise<void> {
   try {
-    const repos = await findRepoPaths(args.repo)
+    let repos = await findRepoPaths(args.repo)
+    let excludeRepos = await expandFileNamePathGlob(args.excludeRepo)
+    repos = repos.filter((repo) => !excludeRepos.includes(repo))
+
     if (repos.length === 0) {
       console.info("No git repositories found")
       return
