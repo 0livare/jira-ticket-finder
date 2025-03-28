@@ -85,6 +85,7 @@ async function main(): Promise<void> {
         repoInfo[repoName] = { tickets, tag: latestTag }
       } else {
         console.info("  No Jira tickets found")
+        repoInfo[repoName] = { tickets: [], tag: latestTag }
       }
     }
 
@@ -102,7 +103,7 @@ async function main(): Promise<void> {
       for (const [repoName, info] of Object.entries(repoInfo)) {
         if (info.excludedReason) {
           console.info(`  ${chalk.green(repoName)}: ${chalk.redBright(info.excludedReason)}`)
-        } else if (info.tickets.length > 0) {
+        } else {
           console.info(
             `  ${chalk.green(repoName)}: ${chalk.yellow(info.tag || "No tag")} ${chalk.gray(`(${info.tickets.length} tickets)`)}`,
           )
