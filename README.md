@@ -9,7 +9,7 @@ This script will:
 1. Extract Jira ticket numbers from commit messages since that tag
 1. Output a summary of all found ticket numbers
 
-## Setup
+### Global Installation
 
 Make sure you have [bun](https://bun.sh/docs/installation) installed globally. If not, you can install it with npm:
 
@@ -17,9 +17,14 @@ Make sure you have [bun](https://bun.sh/docs/installation) installed globally. I
 npm i -g bun
 ```
 
-### Global Installation
+Then clone this repo
 
-Register this script globally under the `jira` cli command with:
+```bash
+git clone https://github.com/0livare/jira-ticket-finder.git
+cd jira-ticket-finder
+```
+
+Then register this script globally under the `jira` cli command with:
 
 ```bash
 bun run build
