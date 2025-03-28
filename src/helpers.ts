@@ -35,6 +35,7 @@ export async function findRepoPaths(repoPathNameGlobs: string[]): Promise<string
   // If no repositories are specified, search for all git
   // repositories in the current working directory
   const allDirs = await getDirectories(cwd)
+  allDirs.push(cwd)
   const repos = []
   for (const dir of allDirs) {
     if (await isGitRepo(dir)) repos.push(dir)
