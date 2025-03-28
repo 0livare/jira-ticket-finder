@@ -48,7 +48,7 @@ export const optionDefinitions: OptionDefinition[] = [
     alias: "m",
     type: Number,
     defaultValue: 30,
-    description: "Maximum number of tickets per repo before excluding (default: 30)",
+    description: "Maximum number of tickets before repo is considered invalid",
   },
   {
     name: "to-commit",

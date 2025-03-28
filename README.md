@@ -47,7 +47,7 @@ jira [options]
 - `-x`, `--exclude-repo`: Specific repositories to exclude. Can be repo names or paths or globs.
 - `-p`, `--prefix`: Jira project prefixes to look for (e.g., "PROJ", "TEST")
 - `-t`, `--tag-pattern`: Glob pattern to match version tags (e.g., `v*`) (default to the latest tag)
-- `-m`, `--max-tickets`: Maximum number of tickets to process per repository (default: 30)
+- `-m`, `--max-tickets`: Maximum number of tickets before repo is considered invalid (default: 30)
 - `-c`, `--to-commit`: Commitish to stop searching at (default: main/master)
 - `-n`, `--no-fetch-latest`: Skip fetching latest repo data before searching
 - `-h`, `--help`: Display usage guide
@@ -89,8 +89,8 @@ jira -t "v[0-9]*"
 
 **Set a different threshold for maximum tickets per repository:**
 
+The assumption here is that if a single repo has more than a certain number of tickets found, that something has gone wrong and those tickets are invalid for some unknown reason. If that is not the case, you can use this setting to increase the threshold.
+
 ```bash
 jira --max-tickets 50
 ```
-
-The script will provide both detailed output per repository and a summary of all unique Jira tickets found across all repositories. Repositories with more tickets than the specified maximum will be excluded from the summary.
