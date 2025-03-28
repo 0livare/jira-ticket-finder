@@ -4,19 +4,17 @@
   "description": "Find Jira tickets in git commits since the last release",
   "author": "Zach Olivare <https://github.com/0livare>",
   "license": "ISC",
-  "module": "index.ts",
-  "main": "dist/jira",
   "type": "module",
   "bin": {
-    "jira": "./dist/jira"
+    "jira": "src/main.ts"
   },
   "files": [
-    "dist"
+    "src"
   ],
   "scripts": {
     "jira": "bun src/main.ts",
-    "build": "bun i && bun build src/main.ts --compile --outfile=dist/jira --sourcemap=inline && bun link",
-    "prepublishOnly": "bun run build"
+    "link": "bun link",
+    "lint": "tsc && prettier --check ."
   },
   "dependencies": {
     "chalk": "^5.4.1",
@@ -36,7 +34,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/0livare/jira-ticket-finder.git"
+    "url": "https://github.com/0livare/jira-ticket-finder"
   },
   "keywords": [
     "jira",
@@ -47,5 +45,5 @@
     "cli",
     "release"
   ],
-  "packageManager": "yarn@1.22.19+sha512.ff4579ab459bb25aa7c0ff75b62acebe576f6084b36aa842971cf250a5d8c6cd3bc9420b22ce63c7f93a0857bc6ef29291db39c3e7a23aab5adfd5a4dd6c5d71"
+  "packageManager": "bun@1.2.2"
 }
