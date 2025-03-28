@@ -3,11 +3,16 @@
 import path from "node:path"
 import chalk from "chalk"
 
-import { parseCommandLineArgs } from "./cli"
+import { parseCommandLineArgs, showUsageGuide } from "./cli"
 import { extractJiraTickets } from "./extract-jira-tickets"
 import { getLatestTag, findRepoPaths, getMainBranch, execAsync } from "./helpers"
 
 const args = parseCommandLineArgs()
+
+if (args.help) {
+  showUsageGuide()
+  process.exit(0)
+}
 
 async function main(): Promise<void> {
   try {

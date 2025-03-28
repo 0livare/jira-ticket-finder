@@ -24,17 +24,15 @@ Register this script globally under the `jira` cli command with:
 ```bash
 bun run build
 
-# no longer has to be in this project
-cd /parent/dir/of/group/of/repos
-
-# global nrds command is now registered!
+# global jira command is now registered!
 jira
 ```
 
 ## Usage
 
 ```bash
-# bun prefix is not necessary if global installation 👆 is done
+cd /parent/dir/of/group/of/repos
+
 jira [options]
 ```
 
@@ -46,6 +44,7 @@ jira [options]
 - `-m`, `--max-tickets`: Maximum number of tickets to process per repository (default: 30)
 - `-c`, `--to-commit`: Commitish to stop searching at (default: main/master)
 - `-n`, `--no-fetch-latest`: Skip fetching latest repo data before searching
+- `-h`, `--help`: Display usage guide
 
 ## Examples:
 
@@ -64,13 +63,13 @@ jira --repo repo1 --repo repo2
 jira -r "files*"
 ```
 
-**Search for specific Jira project tickets:**
+**Search for specific Jira ticket prefixes:**
 
 ```bash
 jira --prefix PROJ --prefix TEST
 ```
 
-**Search with a specific tag pattern:**
+**Search for a specific tag pattern:**
 
 Specify a glob pattern to use for matching version tags. Default is to use the latest tag.
 

@@ -1,4 +1,61 @@
 import commandLineArgs from "command-line-args"
+import commandLineUsage, { type OptionDefinition, type Section } from "command-line-usage"
+
+export const optionDefinitions: OptionDefinition[] = [
+  {
+    name: "repo",
+    alias: "r",
+    type: String,
+    multiple: true,
+    defaultValue: [],
+    description: "Specify repository paths or globs to search in",
+  },
+  {
+    name: "prefix",
+    alias: "p",
+    type: String,
+    multiple: true,
+    defaultValue: [],
+    description: "Jira ticket prefixes to search for (e.g., 'ABC', 'XYZ')",
+  },
+  {
+    name: "tag-pattern",
+    alias: "t",
+    type: String,
+    description: "Regex pattern to filter tags (e.g., '^v[0-9]')",
+  },
+  {
+    name: "max-tickets",
+    alias: "m",
+    type: Number,
+    defaultValue: 30,
+    description: "Maximum number of tickets per repo before excluding (default: 30)",
+  },
+  {
+    name: "to-commit",
+    alias: "c",
+    type: String,
+    description: "End commit to search to (defaults to main branch)",
+  },
+  {
+    name: "fetch-latest",
+    type: Boolean,
+    defaultValue: true,
+    description: "Fetch latest from remote before searching (default: true)",
+  },
+  {
+    name: "no-fetch-latest",
+    alias: "n",
+    type: Boolean,
+    description: "Do not fetch latest from remote before searching",
+  },
+  {
+    name: "help",
+    alias: "h",
+    type: Boolean,
+    description: "Display this usage guide",
+  },
+]
 
 type Args = {
   repo: string[]
@@ -7,24 +64,51 @@ type Args = {
   maxTickets: number
   toCommit: string | undefined
   fetchLatest: boolean
+  help?: boolean
 }
 
 export function parseCommandLineArgs(): Args {
-  const options = commandLineArgs(
-    [
-      { name: "repo", alias: "r", type: String, multiple: true, defaultValue: [] },
-      { name: "prefix", alias: "p", type: String, multiple: true, defaultValue: [] },
-      { name: "tag-pattern", alias: "t", type: String },
-      { name: "max-tickets", alias: "m", type: Number, defaultValue: 30 },
-      { name: "to-commit", alias: "c", type: String },
-      { name: "fetch-latest", type: Boolean, defaultValue: true },
-      { name: "no-fetch-latest", alias: "n", type: Boolean },
-    ],
-    { camelCase: true },
-  )
+  const options = commandLineArgs(optionDefinitions, { camelCase: true })
 
   return {
     ...(options as any),
     fetchLatest: options.fetchLatest && !options.noFetchLatest,
   }
+}
+
+export function showUsageGuide(): void {
+  const sections: Section[] = [
+    {
+      header: "Jira Ticket Finder",
+      content:
+        "Make releases easier by determining which Jira tickets have been completed since the last release.",
+    },
+    {
+      header: "Options",
+      optionList: optionDefinitions,
+      hide: ["fetch-latest"],
+    },
+    {
+      header: "Examples",
+      content: [
+        "Search all repositories in the current directory",
+        "$ jira",
+        "",
+        "Search in a specific repository",
+        "$ jira --repo my-repo",
+        "$ jira --repo ~/projects/my-repo",
+        "",
+        "Search for specific Jira ticket prefixes",
+        "$ jira --prefix PROJ --prefix TEST",
+        "",
+        "Use glob pattern to search multiple repositories",
+        '$ jira --repo "~/projects/*" --prefix ABC --prefix XYZ',
+        "",
+        "Search for a specific tag pattern",
+        '$ jira --tag-pattern "v*"',
+      ],
+    },
+  ]
+
+  console.log(commandLineUsage(sections))
 }
