@@ -54,8 +54,9 @@ async function getDirectories(sourceDir: string): Promise<string[]> {
 
 async function isGitRepo(dir: string): Promise<boolean> {
   try {
-    await execAsync("git rev-parse --is-inside-work-tree", { cwd: dir })
-    return true
+    const gitDir = path.join(dir, '.git')
+    const stats = await fs.promises.stat(gitDir)
+    return stats.isDirectory()
   } catch (error) {
     return false
   }
