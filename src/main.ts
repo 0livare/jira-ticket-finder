@@ -5,14 +5,14 @@ import chalk from "chalk"
 
 import { parseCommandLineArgs, showUsageGuide } from "./cli"
 import { extractJiraTickets } from "./extract-jira-tickets"
+import { findRepoPaths, expandFileNamePathGlob } from "./file-helpers"
 import {
   getLatestTag,
-  findRepoPaths,
-  expandFileNamePathGlob,
   getMainBranch,
   execAsync,
   getCommitMessagesInRange,
-} from "./helpers"
+  isCommitParentOf,
+} from "./git-helpers"
 
 const args = parseCommandLineArgs()
 
@@ -61,6 +61,26 @@ async function main(): Promise<void> {
       }
 
       const toCommit = args.toCommit || (await getMainBranch(repo))
+
+      if (latestTag) {
+        const isValidRange = await isCommitParentOf({
+          repoPath: repo,
+          possibleParent: latestTag,
+          possibleChild: toCommit,
+        })
+        if (!isValidRange) {
+          console.info(
+            chalk.redBright(`  ${latestTag} is not a parent of ${toCommit}, excluding repository`),
+          )
+          repoInfo[repoName] = {
+            tickets: [],
+            tag: null,
+            excludedReason: "Excluded due to invalid tag range",
+          }
+          continue
+        }
+      }
+
       const gitRange = latestTag ? `${latestTag}..${toCommit}` : toCommit
       console.info(chalk.gray.italic(`  Searching commits: ${gitRange}`))
 
