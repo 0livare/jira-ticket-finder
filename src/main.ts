@@ -7,7 +7,7 @@ import { parseCommandLineArgs } from "./cli"
 import { extractJiraTickets } from "./extract-jira-tickets"
 import { getLatestTag, findRepoPaths, getMainBranch, execAsync } from "./helpers"
 
-const args = await parseCommandLineArgs()
+const args = parseCommandLineArgs()
 
 async function main(): Promise<void> {
   try {
@@ -30,7 +30,7 @@ async function main(): Promise<void> {
       const repoName = path.basename(repo)
       console.info(`\n${chalk.green(repoName)}`)
 
-      if (!args.noFetchLatest) await execAsync("git fetch --all", { cwd: repo })
+      if (args.fetchLatest) await execAsync("git fetch --all", { cwd: repo })
 
       const latestTag = await getLatestTag({ repoPath: repo, tagPattern: args.tagPattern })
       if (latestTag) {
@@ -50,11 +50,10 @@ async function main(): Promise<void> {
       console.info(chalk.gray.italic(`  Searching commits: ${gitRange}`))
       const tickets = await extractJiraTickets({ repoPath: repo, gitRange, prefixes: args.prefix })
 
-      const maxTickets = parseInt(args.maxTickets)
-      if (tickets.length > maxTickets) {
+      if (tickets.length > args.maxTickets) {
         console.info(
           chalk.redBright(
-            `  Excluding repository with ${tickets.length} tickets (exceeds threshold of ${maxTickets})`,
+            `  Excluding repository with ${tickets.length} tickets (exceeds threshold of ${args.maxTickets})`,
           ),
         )
         repoInfo[repoName] = {

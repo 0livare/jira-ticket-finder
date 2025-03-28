@@ -1,44 +1,30 @@
-import { parseArgs } from "util"
+import commandLineArgs from "command-line-args"
 
-export async function parseCommandLineArgs() {
-  let { values } = parseArgs({
-    args: Bun.argv,
-    options: {
-      repo: {
-        type: "string",
-        short: "r",
-        multiple: true,
-        default: [],
-      },
-      prefix: {
-        type: "string",
-        short: "p",
-        multiple: true,
-        default: [],
-      },
-      tagPattern: {
-        type: "string",
-        short: "t",
-        default: undefined,
-      },
-      maxTickets: {
-        type: "string",
-        short: "m",
-        default: "30",
-      },
-      toCommit: {
-        type: "string",
-        short: "c",
-      },
-      noFetchLatest: {
-        type: "boolean",
-        short: "f",
-        default: false,
-      },
-    },
-    strict: true,
-    allowPositionals: true,
-  })
+type Args = {
+  repo: string[]
+  prefix: string[]
+  tagPattern: string | undefined
+  maxTickets: number
+  toCommit: string | undefined
+  fetchLatest: boolean
+}
 
-  return values
+export function parseCommandLineArgs(): Args {
+  const options = commandLineArgs(
+    [
+      { name: "repo", alias: "r", type: String, multiple: true, defaultValue: [] },
+      { name: "prefix", alias: "p", type: String, multiple: true, defaultValue: [] },
+      { name: "tag-pattern", alias: "t", type: String },
+      { name: "max-tickets", alias: "m", type: Number, defaultValue: 30 },
+      { name: "to-commit", alias: "c", type: String },
+      { name: "fetch-latest", type: Boolean, defaultValue: true },
+      { name: "no-fetch-latest", alias: "n", type: Boolean },
+    ],
+    { camelCase: true },
+  )
+
+  return {
+    ...(options as any),
+    fetchLatest: options.fetchLatest && !options.noFetchLatest,
+  }
 }
