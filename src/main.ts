@@ -5,7 +5,7 @@ import chalk from "chalk"
 
 import { parseCommandLineArgs, showUsageGuide } from "./cli"
 import { extractJiraTickets } from "./extract-jira-tickets"
-import { findRepoPaths, expandFileNamePathGlob } from "./file-helpers"
+import { findRepoPaths } from "./file-helpers"
 import {
   getLatestTag,
   getMainBranch,
@@ -24,7 +24,7 @@ if (args.help) {
 async function main(): Promise<void> {
   try {
     let repos = await findRepoPaths(args.repo)
-    let excludeRepos = await expandFileNamePathGlob(args.excludeRepo)
+    let excludeRepos = await findRepoPaths(args.excludeRepo)
     repos = repos.filter((repo) => !excludeRepos.includes(repo))
 
     if (repos.length === 0) {

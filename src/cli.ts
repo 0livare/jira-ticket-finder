@@ -18,7 +18,7 @@ export const optionDefinitions: OptionDefinition[] = [
     alias: "r",
     type: String,
     multiple: true,
-    defaultValue: [],
+    defaultValue: ["./", "./*"],
     description: "Specify repository paths or globs to search in",
   },
   {
