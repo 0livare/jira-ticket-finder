@@ -12,12 +12,12 @@ export async function findRepoPaths(repoPathNameGlobs: string[]): Promise<string
     filePaths.map(async (path) => [path, await isGitRepo(path)] as const),
   )
   const validRepoPaths = pathIsRepoTuples.filter(([_, isRepo]) => isRepo).map(([path]) => path)
-  return validRepoPaths
+  return validRepoPaths.sort()
 }
 
 /**
  * If passed a full file/directory path, return it.
- * If passed a directory name without a path, assume it is in the current working directory.
+ * If passed a relative path, assume it is relative the current working directory.
  * If passed a glob pattern, expand it into a list of file/directory paths.
  */
 async function expandFileNamePathGlob(dirNamePathGlobs: string[]): Promise<string[]> {

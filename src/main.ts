@@ -96,7 +96,7 @@ async function main(): Promise<void> {
         repoInfo[repoName] = {
           tickets: [],
           tag: null,
-          excludedReason: "Excluded due to exceeding threshold",
+          excludedReason: "Excluded due to exceeding ticket threshold",
         }
       } else if (tickets.length > 0) {
         console.info(`  Found ${tickets.length} Jira tickets:`)
