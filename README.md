@@ -30,14 +30,16 @@ jira [options]
 
 ## Options:
 
-- `-r`, `--repo`: Specific repositories to search (defaults to all git repos in current directory). Can be repo names or paths or globs.
-- `-x`, `--exclude-repo`: Specific repositories to exclude. Can be repo names or paths or globs.
-- `-p`, `--prefix`: Jira project prefixes to look for (e.g., "PROJ", "TEST")
-- `-t`, `--tag-pattern`: Glob pattern to match version tags (e.g., `v*`) (default to the latest tag)
-- `-m`, `--max-tickets`: Maximum number of tickets before repo is considered invalid (default: 30)
-- `-c`, `--to-commit`: Commitish to stop searching at (default: main/master)
-- `-n`, `--no-fetch-latest`: Skip fetching latest repo data before searching
-- `-h`, `--help`: Display usage guide
+| Option                    | Default                            | Description                                                            | Example                                       |
+| ------------------------- | ---------------------------------- | ---------------------------------------------------------------------- | --------------------------------------------- |
+| `-r`, `--repo`            | All git repos in current directory | Specific repositories to search. Can be repo names or paths or globs.  | `repo1`, `../repo1`, `~/foo/repo1`, `"foo/*"` |
+| `-x`, `--exclude-repo`    | -                                  | Specific repositories to exclude. Can be repo names or paths or globs. | `repo1`, `../repo1`, `~/foo/repo1`, `"foo/*"` |
+| `-p`, `--prefix`          | Any Jira prefix                    | Jira project prefixes to look for                                      | PROJ, TEST                                    |
+| `-t`, `--tag-pattern`     | Latest tag in each repo            | Glob pattern to match version tags                                     | `"v*"`, `"*.*.*"`                             |
+| `-m`, `--max-tickets`     | 30                                 | Maximum number of tickets before repo is considered invalid            | 100                                           |
+| `-c`, `--to-commit`       | main/master                        | Commitish to stop searching at                                         | ad233f8, HEAD, my-branch                      |
+| `-n`, `--no-fetch-latest` | false                              | Skip fetching latest repo data before searching                        | -                                             |
+| `-h`, `--help`            | -                                  | Display usage guide                                                    | -                                             |
 
 ## Examples:
 
