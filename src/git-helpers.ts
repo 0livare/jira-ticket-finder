@@ -3,7 +3,6 @@ import { promisify } from "util"
 import fs from "node:fs"
 import path from "node:path"
 import { minimatch } from "minimatch"
-import { stderr } from "node:process"
 
 export const execAsync = promisify(exec)
 

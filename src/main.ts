@@ -13,6 +13,7 @@ import {
   getCommitMessagesInRange,
   isCommitParentOf,
 } from "./git-helpers"
+import { getJiraTicketUrl } from "./jira-helpers"
 
 const args = parseCommandLineArgs()
 
@@ -134,8 +135,12 @@ async function main(): Promise<void> {
       }
 
       console.info("\nJira tickets:")
+
       for (const ticket of uniqueTickets) {
-        console.info(chalk.cyan(ticket))
+        const ticketUrl = args.jiraBaseUrl
+          ? ": " + chalk.gray(getJiraTicketUrl(ticket, args.jiraBaseUrl))
+          : ""
+        console.info(`${chalk.cyan(ticket)}${ticketUrl}`)
       }
     } else {
       console.info("No Jira tickets found in any repository")

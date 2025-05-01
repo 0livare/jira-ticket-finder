@@ -9,6 +9,7 @@ type Args = {
   maxTickets: number
   toCommit: string | undefined
   fetchLatest: boolean
+  jiraBaseUrl: string | undefined
   help?: boolean
 }
 
@@ -69,6 +70,13 @@ export const optionDefinitions: OptionDefinition[] = [
     description: "Do not fetch latest from remote before searching",
   },
   {
+    name: "jira-base-url",
+    alias: "u",
+    type: String,
+    description:
+      "Jira base URL for fetching ticket descriptions (e.g., 'https://yourdomain.atlassian.net')",
+  },
+  {
     name: "help",
     alias: "h",
     type: Boolean,
@@ -115,6 +123,9 @@ export function showUsageGuide(): void {
         "",
         "Search for a specific tag pattern",
         '$ jira --tag-pattern "v*"',
+        "",
+        "Include Jira ticket descriptions",
+        "$ jira --jira-base-url https://yourdomain.atlassian.net",
       ],
     },
   ]
