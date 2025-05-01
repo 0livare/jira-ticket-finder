@@ -38,7 +38,27 @@ export async function isGitRepo(dir: string): Promise<boolean> {
 }
 
 export async function getMainBranch(repoPath: string): Promise<string> {
-  const { stdout: firstRemote } = await execAsync("git remote show | head -n 1", { cwd: repoPath })
+  const { stdout: remotes } = await execAsync("git remote show", { cwd: repoPath })
+  const remotesList = remotes.split("\n").map((line) => line.trim())
+
+  // look for remotes in the order or priority: [up, upstream, origin, any other]
+  const priority = ["up", "upstream", "origin"]
+  remotesList.sort((a, b) => {
+    const aIndex = priority.findIndex((prefix) => a.startsWith(prefix))
+    const bIndex = priority.findIndex((prefix) => b.startsWith(prefix))
+    if (aIndex === -1 && bIndex === -1) return 0 // both are not in priority
+    if (aIndex === -1) return 1 // a is not in priority, b is
+    if (bIndex === -1) return -1 // b is not in priority, a is
+    if (aIndex < bIndex) return -1 // a has higher priority
+    if (aIndex > bIndex) return 1 // b has higher priority
+    // if both have the same priority, sort by name
+    if (a < b) return -1
+    if (a > b) return 1
+    // if both are equal, return 0
+    return 0
+  })
+  const firstRemote = remotesList[0]
+
   const { stdout: branches } = await execAsync("git branch", { cwd: repoPath })
   if (branches.includes("main")) return `${firstRemote.trim()}/main`
   if (branches.includes("master")) return `${firstRemote.trim()}/master`
