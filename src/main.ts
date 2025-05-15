@@ -63,7 +63,7 @@ async function main(): Promise<void> {
 
       const toCommit = args.toCommit || (await getMainBranch(repo))
 
-      if (latestTag) {
+      if (latestTag && args.requireLinearHistory) {
         const isValidRange = await isCommitParentOf({
           repoPath: repo,
           possibleParent: latestTag,
