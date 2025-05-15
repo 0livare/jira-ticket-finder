@@ -10,6 +10,7 @@ type Args = {
   toCommit: string | undefined
   fetchLatest: boolean
   jiraBaseUrl: string | undefined
+  requireLinearHistory: boolean | undefined
   help?: boolean
 }
 
@@ -68,6 +69,12 @@ export const optionDefinitions: OptionDefinition[] = [
     alias: "n",
     type: Boolean,
     description: "Do not fetch latest from remote before searching",
+  },
+  {
+    name: "require-linear-history",
+    alias: "l",
+    type: Boolean,
+    description: "Require the latest tag to be a direct ancestor of the commit",
   },
   {
     name: "jira-base-url",

@@ -59,6 +59,7 @@ export async function getMainBranch(repoPath: string): Promise<string> {
   const firstRemote = remotesList[0]
 
   const { stdout: branches } = await execAsync("git branch", { cwd: repoPath })
+  if (branches.includes("dev")) return `${firstRemote.trim()}/dev`
   if (branches.includes("main")) return `${firstRemote.trim()}/main`
   if (branches.includes("master")) return `${firstRemote.trim()}/master`
   return "HEAD"

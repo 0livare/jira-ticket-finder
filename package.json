@@ -1,6 +1,6 @@
 {
   "name": "jira-ticket-finder",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Find Jira tickets in git commits since the last release",
   "author": "Zach Olivare <https://github.com/0livare>",
   "license": "ISC",
